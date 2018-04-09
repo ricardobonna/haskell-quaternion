@@ -1,5 +1,6 @@
 module Quaternion(
-  Quaternion, conjQ, realQ, imagQ, normQ, divQR, invQ
+  Quaternion, conjQ, realQ, imagQ, normQ, divQR, invQ,
+  fromListQ, fromAngleAxisQ, rotQ
 ) where
 
 data Quaternion = Quaternion Float Float Float Float deriving (Eq)
@@ -53,7 +54,7 @@ fromListQ [r, i, j, k] = Quaternion r i j k
 fromListQ _ = error "fromListQ: List with wrong number of elements"
 
 fromAngleAxisQ :: Float -> (Float, Float, Float) -> Quaternion
-fromAngleAxisQ theta (i,j,k) = Quaternion (cos $ theta/2) (sin a * i/absV)
+fromAngleAxisQ theta (i,j,k) = Quaternion (cos a) (sin a * i/absV)
                                  (sin a * j/absV) (sin a * k/absV)
   where a = theta/2
         absV = sqrt (i^2 + j^2 + k^2)
