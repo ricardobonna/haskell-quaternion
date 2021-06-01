@@ -15,7 +15,6 @@ instance (Num a) => Num (Quaternion a) where
           k3 = r1*k2 + i1*j2 - j1*i2 + k1*r2
   abs (Quaternion r i j k) = Quaternion (abs r) (abs i) (abs j) (abs k)
   signum (Quaternion r i j k) = Quaternion (signum r) (signum i) (signum j) (signum k)
-    where qmod = realQ $ abs (Quaternion r i j k)
   fromInteger a = Quaternion (fromInteger a) 0 0 0
   negate (Quaternion r i j k) = Quaternion (-r) (-i) (-j) (-k)
 
@@ -57,6 +56,21 @@ rotQ q1 q2 = q1 * q2 * conjQ q1
 unitQ :: (Floating a) => Quaternion a -> Quaternion a
 unitQ q = divQR q $ normQ q
 
+expQ :: (Floating a) => Quaternion a -> Quaternion a
+expQ (Quaternion r i j k) = Quaternion yr yi yj yk
+  where v = sqrt (i^2 + j^2 + k^2)
+        yr = exp r * cos v
+        yi = exp r * (i/v) * sin v
+        yj = exp r * (j/v) * sin v
+        yk = exp r * (k/v) * sin v
+
+quat2euler :: (RealFloat a) => Quaternion a -> (a, a, a)
+quat2euler (Quaternion q0 q1 q2 q3) = (phi, theta, psi)
+  where phi = atan2 (2*(q0*q1+q2*q3)) (1-2*(q1^2+q2^2))
+        theta = asin (2*(q0*q2-q3*q1))
+        psi = atan2 (2*(q0*q3+q1*q2)) (1-2*(q2^2+q3^2))
+
+
 -- Builders
 
 fromListQ :: (Num a) => [a] -> Quaternion a
@@ -72,3 +86,6 @@ fromAngleAxisQ theta (i,j,k) = Quaternion (cos a) (sin a * i/absV)
                                  (sin a * j/absV) (sin a * k/absV)
   where a = theta/2
         absV = sqrt (i^2 + j^2 + k^2)
+
+fromOmega :: (Num a) => (a, a, a) -> Quaternion a
+fromOmega (i, j, k) = Quaternion 0 i j k
