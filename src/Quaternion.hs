@@ -1,6 +1,19 @@
+-----------------------------------------------------------------------------
+-- |
+-- Module  :  Quaternion
+-- Copyright   :  (c) Ricardo Bonna
+-- License     :  still needs license
+--
+-- Maintainer  :  ricardobonna@gmail.com
+-- Stability   :  experimental
+-- Portability :  portable
+--
+--
+-----------------------------------------------------------------------------
+
 module Quaternion(
-  Quaternion, conjQ, realQ, imagQ, normQ, divQR, invQ,
-  fromListQ, fromRealImagQ, fromAngleAxisQ, rotQ
+  Quaternion, conjQ, realQ, imagQ, normQ, divQR, mulQR, invQ, rotQ, unitQ, expQ,
+  quat2euler, fromListQ, fromRealImagQ, fromAngleAxisQ, fromOmega, euler2quat
 ) where
 
 data Quaternion a = Quaternion a a a a deriving (Eq)
@@ -89,3 +102,10 @@ fromAngleAxisQ theta (i,j,k) = Quaternion (cos a) (sin a * i/absV)
 
 fromOmega :: (Num a) => (a, a, a) -> Quaternion a
 fromOmega (i, j, k) = Quaternion 0 i j k
+
+euler2quat :: (Floating a) => (a, a, a) -> Quaternion a
+euler2quat (phi, theta, psi) = Quaternion q0 q1 q2 q3
+  where q0 = cos (phi/2) * cos (theta/2) * cos (psi/2) + sin (phi/2) * sin (theta/2) * sin (psi/2)
+        q1 = sin (phi/2) * cos (theta/2) * cos (psi/2) - cos (phi/2) * sin (theta/2) * sin (psi/2)
+        q2 = cos (phi/2) * sin (theta/2) * cos (psi/2) + sin (phi/2) * cos (theta/2) * sin (psi/2)
+        q3 = cos (phi/2) * cos (theta/2) * sin (psi/2) - sin (phi/2) * sin (theta/2) * cos (psi/2)
